@@ -62,27 +62,27 @@ import (
 // and options. Examples:
 //
 //   // Field is ignored by this package.
-//   Field int `json:"-"`
+//   Field int `xjson:"-"`
 //
 //   // Field appears in JSON as key "myName".
-//   Field int `json:"myName"`
+//   Field int `xjson:"myName"`
 //
 //   // Field appears in JSON as key "myName" and
 //   // the field is omitted from the object if its value is empty,
 //   // as defined above.
-//   Field int `json:"myName,omitempty"`
+//   Field int `xjson:"myName,omitempty"`
 //
 //   // Field appears in JSON as key "Field" (the default), but
 //   // the field is skipped if empty.
 //   // Note the leading comma.
-//   Field int `json:",omitempty"`
+//   Field int `xjson:",omitempty"`
 //
 // The "string" option signals that a field is stored as JSON inside a
 // JSON-encoded string. It applies only to fields of string, floating point,
 // or integer types. This extra level of encoding is sometimes used when
 // communicating with JavaScript programs:
 //
-//    Int64String int64 `json:",string"`
+//    Int64String int64 `xjson:",string"`
 //
 // The key name will be used if it's a non-empty string consisting of
 // only Unicode letters, digits, dollar signs, percent signs, hyphens,
@@ -1019,7 +1019,7 @@ func typeFields(t reflect.Type) []field {
 				if sf.PkgPath != "" { // unexported
 					continue
 				}
-				tag := sf.Tag.Get("json")
+				tag := sf.Tag.Get("xjson")
 				if tag == "-" {
 					continue
 				}

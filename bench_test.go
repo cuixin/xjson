@@ -19,18 +19,18 @@ import (
 )
 
 type codeResponse struct {
-	Tree     *codeNode `json:"tree"`
-	Username string    `json:"username"`
+	Tree     *codeNode `xjson:"tree"`
+	Username string    `xjson:"username"`
 }
 
 type codeNode struct {
-	Name     string      `json:"name"`
-	Kids     []*codeNode `json:"kids"`
-	CLWeight float64     `json:"cl_weight"`
-	Touches  int         `json:"touches"`
-	MinT     int64       `json:"min_t"`
-	MaxT     int64       `json:"max_t"`
-	MeanT    int64       `json:"mean_t"`
+	Name     string      `xjson:"name"`
+	Kids     []*codeNode `xjson:"kids"`
+	CLWeight float64     `xjson:"cl_weight"`
+	Touches  int         `xjson:"touches"`
+	MinT     int64       `xjson:"min_t"`
+	MaxT     int64       `xjson:"max_t"`
+	MeanT    int64       `xjson:"mean_t"`
 }
 
 var codeJSON []byte

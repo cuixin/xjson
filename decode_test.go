@@ -18,11 +18,11 @@ import (
 type T struct {
 	X string
 	Y int
-	Z int `json:"-"`
+	Z int `xjson:"-"`
 }
 
 type U struct {
-	Alphabet string `json:"alpha"`
+	Alphabet string `xjson:"alpha"`
 }
 
 type V struct {
@@ -112,8 +112,8 @@ type Top struct {
 	Level0 int
 	Embed0
 	*Embed0a
-	*Embed0b `json:"e,omitempty"` // treated as named
-	Embed0c  `json:"-"`           // ignored
+	*Embed0b `xjson:"e,omitempty"` // treated as named
+	Embed0c  `xjson:"-"`           // ignored
 	Loop
 	Embed0p // has Point with X, Y, used
 	Embed0q // has Point with Z, used
@@ -124,15 +124,15 @@ type Embed0 struct {
 	Level1b int // used because Embed0a's Level1b is renamed
 	Level1c int // used because Embed0a's Level1c is ignored
 	Level1d int // annihilated by Embed0a's Level1d
-	Level1e int `json:"x"` // annihilated by Embed0a.Level1e
+	Level1e int `xjson:"x"` // annihilated by Embed0a.Level1e
 }
 
 type Embed0a struct {
-	Level1a int `json:"Level1a,omitempty"`
-	Level1b int `json:"LEVEL1B,omitempty"`
-	Level1c int `json:"-"`
+	Level1a int `xjson:"Level1a,omitempty"`
+	Level1b int `xjson:"LEVEL1B,omitempty"`
+	Level1c int `xjson:"-"`
 	Level1d int // annihilated by Embed0's Level1d
-	Level1f int `json:"x"` // annihilated by Embed0's Level1e
+	Level1f int `xjson:"x"` // annihilated by Embed0's Level1e
 }
 
 type Embed0b Embed0
@@ -148,8 +148,8 @@ type Embed0q struct {
 }
 
 type Loop struct {
-	Loop1 int `json:",omitempty"`
-	Loop2 int `json:",omitempty"`
+	Loop1 int `xjson:",omitempty"`
+	Loop2 int `xjson:",omitempty"`
 	*Loop
 }
 
@@ -206,8 +206,8 @@ type unmarshalTest struct {
 
 type Ambig struct {
 	// Given "hello", the first match should win.
-	First  int `json:"HELLO"`
-	Second int `json:"Hello"`
+	First  int `xjson:"HELLO"`
+	Second int `xjson:"Hello"`
 }
 
 type XYZ struct {
@@ -667,7 +667,7 @@ func TestEscape(t *testing.T) {
 
 // WrongString is a struct that's misusing the ,string modifier.
 type WrongString struct {
-	Message string `json:"result,string"`
+	Message string `xjson:"result,string"`
 }
 
 type wrongStringTest struct {
@@ -717,10 +717,10 @@ type All struct {
 	Float32 float32
 	Float64 float64
 
-	Foo  string `json:"bar"`
-	Foo2 string `json:"bar2,dummyopt"`
+	Foo  string `xjson:"bar"`
+	Foo2 string `xjson:"bar2,dummyopt"`
 
-	IntStr int64 `json:",string"`
+	IntStr int64 `xjson:",string"`
 
 	PBool    *bool
 	PInt     *int
@@ -1045,8 +1045,8 @@ func TestRefUnmarshal(t *testing.T) {
 // Issue 3450
 func TestEmptyString(t *testing.T) {
 	type T2 struct {
-		Number1 int `json:",string"`
-		Number2 int `json:",string"`
+		Number1 int `xjson:",string"`
+		Number2 int `xjson:",string"`
 	}
 	data := `{"Number1":"1", "Number2":""}`
 	dec := NewDecoder(strings.NewReader(data))
@@ -1064,8 +1064,8 @@ func TestEmptyString(t *testing.T) {
 // Issue 7046
 func TestNullString(t *testing.T) {
 	type T struct {
-		A int `json:",string"`
-		B int `json:",string"`
+		A int `xjson:",string"`
+		B int `xjson:",string"`
 	}
 	data := []byte(`{"A": "1", "B": null}`)
 	var s T
@@ -1239,8 +1239,8 @@ func TestUnmarshalSyntax(t *testing.T) {
 // Issue 4660
 type unexportedFields struct {
 	Name string
-	m    map[string]interface{} `json:"-"`
-	m2   map[string]interface{} `json:"abcd"`
+	m    map[string]interface{} `xjson:"-"`
+	m2   map[string]interface{} `xjson:"abcd"`
 }
 
 func TestUnmarshalUnexported(t *testing.T) {

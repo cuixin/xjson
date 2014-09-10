@@ -13,30 +13,30 @@ import (
 )
 
 type Optionals struct {
-	Sr string `json:"sr"`
-	So string `json:"so,omitempty"`
-	Sw string `json:"-"`
+	Sr string `xjson:"sr"`
+	So string `xjson:"so,omitempty"`
+	Sw string `xjson:"-"`
 
-	Ir int `json:"omitempty"` // actually named omitempty, not an option
-	Io int `json:"io,omitempty"`
+	Ir int `xjson:"omitempty"` // actually named omitempty, not an option
+	Io int `xjson:"io,omitempty"`
 
-	Slr []string `json:"slr,random"`
-	Slo []string `json:"slo,omitempty"`
+	Slr []string `xjson:"slr,random"`
+	Slo []string `xjson:"slo,omitempty"`
 
-	Mr map[string]interface{} `json:"mr"`
-	Mo map[string]interface{} `json:",omitempty"`
+	Mr map[string]interface{} `xjson:"mr"`
+	Mo map[string]interface{} `xjson:",omitempty"`
 
-	Fr float64 `json:"fr"`
-	Fo float64 `json:"fo,omitempty"`
+	Fr float64 `xjson:"fr"`
+	Fo float64 `xjson:"fo,omitempty"`
 
-	Br bool `json:"br"`
-	Bo bool `json:"bo,omitempty"`
+	Br bool `xjson:"br"`
+	Bo bool `xjson:"bo,omitempty"`
 
-	Ur uint `json:"ur"`
-	Uo uint `json:"uo,omitempty"`
+	Ur uint `xjson:"ur"`
+	Uo uint `xjson:"uo,omitempty"`
 
-	Str struct{} `json:"str"`
-	Sto struct{} `json:"sto,omitempty"`
+	Str struct{} `xjson:"str"`
+	Sto struct{} `xjson:"sto,omitempty"`
 }
 
 var optionalsExpected = `{
@@ -67,9 +67,9 @@ func TestOmitEmpty(t *testing.T) {
 }
 
 type StringTag struct {
-	BoolStr bool   `json:",string"`
-	IntStr  int64  `json:",string"`
-	StrStr  string `json:",string"`
+	BoolStr bool   `xjson:",string"`
+	IntStr  int64  `xjson:",string"`
+	StrStr  string `xjson:",string"`
 }
 
 var stringTagExpected = `{
@@ -320,7 +320,7 @@ func TestEmbeddedBug(t *testing.T) {
 }
 
 type BugD struct { // Same as BugA after tagging.
-	XXX string `json:"S"`
+	XXX string `xjson:"S"`
 }
 
 // BugD's tagged S field should dominate BugA's.

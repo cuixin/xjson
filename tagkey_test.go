@@ -9,39 +9,39 @@ import (
 )
 
 type basicLatin2xTag struct {
-	V string `json:"$%-/"`
+	V string `xjson:"$%-/"`
 }
 
 type basicLatin3xTag struct {
-	V string `json:"0123456789"`
+	V string `xjson:"0123456789"`
 }
 
 type basicLatin4xTag struct {
-	V string `json:"ABCDEFGHIJKLMO"`
+	V string `xjson:"ABCDEFGHIJKLMO"`
 }
 
 type basicLatin5xTag struct {
-	V string `json:"PQRSTUVWXYZ_"`
+	V string `xjson:"PQRSTUVWXYZ_"`
 }
 
 type basicLatin6xTag struct {
-	V string `json:"abcdefghijklmno"`
+	V string `xjson:"abcdefghijklmno"`
 }
 
 type basicLatin7xTag struct {
-	V string `json:"pqrstuvwxyz"`
+	V string `xjson:"pqrstuvwxyz"`
 }
 
 type miscPlaneTag struct {
-	V string `json:"色は匂へど"`
+	V string `xjson:"色は匂へど"`
 }
 
 type percentSlashTag struct {
-	V string `json:"text/html%"` // http://golang.org/issue/2718
+	V string `xjson:"text/html%"` // http://golang.org/issue/2718
 }
 
 type punctuationTag struct {
-	V string `json:"!#$%&()*+-./:<=>?@[]^_{|}~"` // http://golang.org/issue/3546
+	V string `xjson:"!#$%&()*+-./:<=>?@[]^_{|}~"` // http://golang.org/issue/3546
 }
 
 type emptyTag struct {
@@ -57,15 +57,15 @@ type badFormatTag struct {
 }
 
 type badCodeTag struct {
-	Z string `json:" !\"#&'()*+,."`
+	Z string `xjson:" !\"#&'()*+,."`
 }
 
 type spaceTag struct {
-	Q string `json:"With space"`
+	Q string `xjson:"With space"`
 }
 
 type unicodeTag struct {
-	W string `json:"Ελλάδα"`
+	W string `xjson:"Ελλάδα"`
 }
 
 var structTagObjectKeyTests = []struct {
