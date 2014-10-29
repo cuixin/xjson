@@ -40,8 +40,8 @@ import (
 //
 // Floating point, integer, and Number values encode as JSON numbers.
 //
-// String values encode as JSON strings. InvalidUTF8Error will be returned
-// if an invalid UTF-8 sequence is encountered.
+// String values encode as JSON strings coerced to valid UTF-8,
+// replacing invalid bytes with the Unicode replacement rune.
 // The angle brackets "<" and ">" are escaped to "\u003c" and "\u003e"
 // to keep some browsers from misinterpreting JSON output as HTML.
 // Ampersand "&" is also escaped to "\u0026" for the same reason.
@@ -93,6 +93,8 @@ import (
 // as described in the next paragraph.
 // An anonymous struct field with a name given in its JSON tag is treated as
 // having that name, rather than being anonymous.
+// An anonymous struct field of interface type is treated the same as having
+// that type as its name, rather than being anonymous.
 //
 // The Go visibility rules for struct fields are amended for JSON when
 // deciding which field to marshal or unmarshal. If there are
@@ -612,7 +614,7 @@ func (me *mapEncoder) encode(e *encodeState, v reflect.Value, _ bool) {
 		if i > 0 {
 			e.WriteByte(',')
 		}
-		e.string(k.String())
+		e.string(sv.get(i))
 		e.WriteByte(':')
 		me.elemEnc(e, v.MapIndex(k), false)
 	}
@@ -620,7 +622,11 @@ func (me *mapEncoder) encode(e *encodeState, v reflect.Value, _ bool) {
 }
 
 func newMapEncoder(t reflect.Type) encoderFunc {
-	if t.Key().Kind() != reflect.String {
+	k := t.Key().Kind()
+	if k != reflect.String && k != reflect.Uint && k != reflect.Uint16 &&
+		k != reflect.Uint32 && k != reflect.Uint64 &&
+		k != reflect.Uint8 && k != reflect.Int && k != reflect.Int16 &&
+		k != reflect.Int32 && k != reflect.Int64 && k != reflect.Int8 {
 		return unsupportedTypeEncoder
 	}
 	me := &mapEncoder{typeEncoder(t.Elem())}
@@ -696,12 +702,12 @@ type ptrEncoder struct {
 	elemEnc encoderFunc
 }
 
-func (pe *ptrEncoder) encode(e *encodeState, v reflect.Value, _ bool) {
+func (pe *ptrEncoder) encode(e *encodeState, v reflect.Value, quoted bool) {
 	if v.IsNil() {
 		e.WriteString("null")
 		return
 	}
-	pe.elemEnc(e, v.Elem(), false)
+	pe.elemEnc(e, v.Elem(), quoted)
 }
 
 func newPtrEncoder(t reflect.Type) encoderFunc {
@@ -777,7 +783,19 @@ type stringValues []reflect.Value
 func (sv stringValues) Len() int           { return len(sv) }
 func (sv stringValues) Swap(i, j int)      { sv[i], sv[j] = sv[j], sv[i] }
 func (sv stringValues) Less(i, j int) bool { return sv.get(i) < sv.get(j) }
-func (sv stringValues) get(i int) string   { return sv[i].String() }
+func (sv stringValues) get(i int) (r string) {
+	switch sv[i].Kind() {
+	case reflect.String:
+		r = sv[i].String()
+	case reflect.Uint, reflect.Uint16, reflect.Uint32,
+		reflect.Uint64, reflect.Uint8:
+		r = strconv.Itoa(int(sv[i].Uint()))
+	case reflect.Int, reflect.Int16, reflect.Int32,
+		reflect.Int64, reflect.Int8:
+		r = strconv.Itoa(int(sv[i].Int()))
+	}
+	return
+}
 
 // NOTE: keep in sync with stringBytes below.
 func (e *encodeState) string(s string) (int, error) {
@@ -803,6 +821,9 @@ func (e *encodeState) string(s string) (int, error) {
 			case '\r':
 				e.WriteByte('\\')
 				e.WriteByte('r')
+			case '\t':
+				e.WriteByte('\\')
+				e.WriteByte('t')
 			default:
 				// This encodes bytes < 0x20 except for \n and \r,
 				// as well as <, > and &. The latter are escaped because they
@@ -876,9 +897,12 @@ func (e *encodeState) stringBytes(s []byte) (int, error) {
 			case '\r':
 				e.WriteByte('\\')
 				e.WriteByte('r')
+			case '\t':
+				e.WriteByte('\\')
+				e.WriteByte('t')
 			default:
 				// This encodes bytes < 0x20 except for \n and \r,
-				// as well as < and >. The latter are escaped because they
+				// as well as <, >, and &. The latter are escaped because they
 				// can lead to security holes when user-controlled strings
 				// are rendered into JSON and served to some browsers.
 				e.WriteString(`\u00`)
